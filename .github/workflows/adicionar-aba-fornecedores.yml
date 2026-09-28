@@ -1,0 +1,91 @@
+name: Adicionar Aba de Fornecedores B2B
+
+on:
+  workflow_dispatch: # Execução manual pelo botão no GitHub
+
+jobs:
+  inject-supplier-directory:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Criar massa de dados dos Fornecedores por CNAE
+        run: |
+          mkdir -p src/services
+          cat << 'EOF' > src/services/fornecedoresCnae.ts
+          export interface FornecedorCnae {
+            id: string;
+            nome: string;
+            cnaeAlvo: string;
+            ramo: string;
+            contato: string;
+            regiaoAtendimento: string;
+            itensPrincipais: string[];
+          }
+
+          export const listaFornecedoresCnae: FornecedorCnae[] = [
+            {
+              id: 'f1',
+              nome: 'Atacadão Posto 13',
+              cnaeAlvo: '4761-0/03',
+              ramo: 'Papelaria e Escritório',
+              contato: '(21) 98484-9303',
+              regiaoAtendimento: 'Região Metropolitana e Baixada Fluminense',
+              itensPrincipais: ['Papel A4/Ofício', 'Pastas AZ', 'Bobinas Térmicas', 'Envelopes']
+            },
+            {
+              id: 'f2',
+              nome: 'Coisa e Tal de Madureira',
+              cnaeAlvo: '4761-0/03',
+              ramo: 'Papelaria e Escritório',
+              contato: 'contato@coisaetalpapelaria.com.br',
+              regiaoAtendimento: 'Zona Norte e Distribuição Capital',
+              itensPrincipais: ['Canetas', 'Marca-texto', 'Clips', 'Organizadores de Mesa']
+            },
+            {
+              id: 'f3',
+              nome: 'Serdal Atacado de Papelaria',
+              cnaeAlvo: '4761-0/03',
+              ramo: 'Papelaria e Escritório',
+              contato: 'Exclusivo B2B via CNPJ',
+              regiaoAtendimento: 'Despacho e Entrega em Todo o Estado do RJ',
+              itensPrincipais: ['Material de Escritório Geral', 'Pastas Catálogo', 'Agendas']
+            },
+            {
+              id: 'f4',
+              nome: 'Rio Elétrica e Insumos Ltda',
+              cnaeAlvo: '4742-3/00',
+              ramo: 'Material Elétrico',
+              contato: '(21) 2233-4455',
+              regiaoAtendimento: 'Capital, Niterói e Região Metropolitana',
+              itensPrincipais: ['Lâmpadas LED', 'Cabos Flexíveis', 'Disjuntores DIN', 'Canaletas']
+            },
+            {
+              id: 'f5',
+              nome: 'Norte Hidráulica Atacadista',
+              cnaeAlvo: '4744-0/03',
+              ramo: 'Material Hidráulico',
+              contato: 'vendas@nortehidraulica.com.br',
+              regiaoAtendimento: 'Baixada Fluminense e Região Serrana',
+              itensPrincipais: ['Tubos PVC Soldáveis', 'Torneiras ABS/Metal', 'Registros', 'Ralos']
+            },
+            {
+              id: 'f6',
+              nome: 'Supratudo Informática Distribuidora',
+              cnaeAlvo: '4751-2/01',
+              ramo: 'Informática e Automação',
+              contato: 'atendimento@supratudob2b.com.br',
+              regiaoAtendimento: 'Todo o Estado do Rio de Janeiro',
+              itensPrincipais: ['Toners Compatíveis', 'Cartuchos de Tinta', 'Mouses e Teclados']
+            }
+          ];
+          EOF
+
+      - name: Commitar dados na estrutura do repositório
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@://github.com"
+          git add src/services/fornecedoresCnae.ts
+          git commit -m "feat: banco de dados estático de fornecedores por CNAE integrado" || echo "Sem alterações"
+          git push origin main
