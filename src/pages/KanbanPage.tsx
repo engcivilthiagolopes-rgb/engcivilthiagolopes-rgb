@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ArrowRight,
   Building2,
   KanbanSquare,
   MapPin,
-  TrendingUp,
+  TrendingDown,
 } from 'lucide-react';
 import type { KanbanColumn, ProcurementItem } from '@/types';
 import { formatBRL } from '@/data/mockData';
@@ -15,6 +15,7 @@ interface KanbanPageProps {
   items: ProcurementItem[];
   onMoveItem: (id: string, column: KanbanColumn) => void;
   onViewItem: (item: ProcurementItem) => void;
+  newItemIds: Set<string>;
 }
 
 const COLUMNS: { id: KanbanColumn; label: string; color: string; dotColor: string }[] = [
@@ -25,7 +26,7 @@ const COLUMNS: { id: KanbanColumn; label: string; color: string; dotColor: strin
   { id: 'homologada', label: 'Homologada / Encerrada', color: 'border-emerald-400', dotColor: 'bg-emerald-400' },
 ];
 
-export function KanbanPage({ items, onMoveItem, onViewItem }: KanbanPageProps) {
+export function KanbanPage({ items, onMoveItem, onViewItem, newItemIds }: KanbanPageProps) {
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [dragOverCol, setDragOverCol] = useState<KanbanColumn | null>(null);
 
@@ -109,63 +110,16 @@ export function KanbanPage({ items, onMoveItem, onViewItem }: KanbanPageProps) {
                 {/* Cards */}
                 <div className="flex-1 space-y-2.5 overflow-y-auto p-3 scrollbar-thin" style={{ maxHeight: 'calc(100vh - 280px)' }}>
                   {colItems.map((item) => (
-                    <div
+                    <KanbanCard
                       key={item.id}
-                      draggable
-                      onDragStart={(e) => handleDragStart(e, item.id)}
+                      item={item}
+                      isNew={newItemIds.has(item.id)}
+                      isDragged={draggedId === item.id}
+                      onDragStart={handleDragStart}
                       onDragEnd={handleDragEnd}
                       onClick={() => onViewItem(item)}
-                      className={`group cursor-pointer rounded-lg border bg-card p-3 shadow-sm transition-all hover:shadow-card ${
-                        draggedId === item.id ? 'opacity-40' : ''
-                      } ${item.column === 'disputa' ? 'animate-pulse-red border-error/30' : ''}`}
-                    >
-                      {/* Card top */}
-                      <div className="mb-2 flex items-center justify-between gap-2">
-                        <PortalBadge portal={item.portal} />
-                        {item.column === 'disputa' && (
-                          <span className="flex items-center gap-1 text-xs font-bold text-error">
-                            <span className="h-2 w-2 animate-pulse rounded-full bg-error" />
-                            AO VIVO
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Title */}
-                      <h4 className="text-xs font-bold text-default leading-snug">{item.title}</h4>
-
-                      {/* Info */}
-                      <div className="mt-2 space-y-1">
-                        <div className="flex items-center gap-1 text-[11px] text-secondary">
-                          <Building2 className="h-3 w-3 shrink-0 text-muted" />
-                          <span className="truncate">{item.buyerOrgan}</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-[11px] text-muted">
-                          <MapPin className="h-3 w-3 shrink-0" />
-                          {item.municipality} - RJ
-                        </div>
-                      </div>
-
-                      {/* Value */}
-                      <div className="mt-2 flex items-center justify-between rounded-md bg-secondary px-2 py-1.5">
-                        <span className="text-[10px] text-muted">Valor</span>
-                        <span className="text-sm font-bold text-primary">{formatBRL(item.estimatedValue)}</span>
-                      </div>
-
-                      {/* Footer */}
-                      <div className="mt-2 flex items-center justify-between">
-                        <CountdownTimer closesAt={item.closesAt} biddingStartsAt={item.biddingStartsAt} />
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleQuickMove(item.id, item.column);
-                          }}
-                          className="flex items-center gap-0.5 rounded-md px-1.5 py-1 text-[10px] font-semibold text-primary opacity-0 transition-opacity group-hover:opacity-100 hover:bg-primary-light"
-                          title="Mover para próxima coluna"
-                        >
-                          <ArrowRight className="h-3 w-3" />
-                        </button>
-                      </div>
-                    </div>
+                      onQuickMove={() => handleQuickMove(item.id, item.column)}
+                    />
                   ))}
 
                   {colItems.length === 0 && (
@@ -178,6 +132,129 @@ export function KanbanPage({ items, onMoveItem, onViewItem }: KanbanPageProps) {
             );
           })}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function KanbanCard({
+  item,
+  isNew,
+  isDragged,
+  onDragStart,
+  onDragEnd,
+  onClick,
+  onQuickMove,
+}: {
+  item: ProcurementItem;
+  isNew: boolean;
+  isDragged: boolean;
+  onDragStart: (e: React.DragEvent, id: string) => void;
+  onDragEnd: () => void;
+  onClick: () => void;
+  onQuickMove: () => void;
+}) {
+  // Track previous value to flash on change for "Em Disputa"
+  const prevValueRef = useRef(item.estimatedValue);
+  const [flashClass, setFlashClass] = useState('');
+  const [animateIn, setAnimateIn] = useState(isNew);
+
+  useEffect(() => {
+    if (isNew) {
+      const t = setTimeout(() => setAnimateIn(false), 2000);
+      return () => clearTimeout(t);
+    }
+  }, [isNew]);
+
+  useEffect(() => {
+    if (item.column === 'disputa' && item.estimatedValue !== prevValueRef.current) {
+      const wentDown = item.estimatedValue < prevValueRef.current;
+      setFlashClass(wentDown ? 'text-error' : 'text-success');
+      const t = setTimeout(() => setFlashClass(''), 1500);
+      prevValueRef.current = item.estimatedValue;
+      return () => clearTimeout(t);
+    }
+    prevValueRef.current = item.estimatedValue;
+  }, [item.estimatedValue, item.column]);
+
+  return (
+    <div
+      draggable
+      onDragStart={(e) => onDragStart(e, item.id)}
+      onDragEnd={onDragEnd}
+      onClick={onClick}
+      className={`group cursor-pointer rounded-lg border bg-card p-3 shadow-sm transition-all hover:shadow-card ${
+        isDragged ? 'opacity-40' : ''
+      } ${item.column === 'disputa' ? 'animate-pulse-red border-error/30' : ''} ${
+        animateIn ? 'animate-fade-in border-primary/40 ring-2 ring-primary/20' : ''
+      }`}
+    >
+      {/* Card top */}
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <PortalBadge portal={item.portal} />
+        {item.column === 'disputa' ? (
+          <span className="flex items-center gap-1 text-xs font-bold text-error">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-error" />
+            AO VIVO
+          </span>
+        ) : isNew ? (
+          <span className="flex items-center gap-1 text-[10px] font-bold text-primary">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+            NOVO
+          </span>
+        ) : null}
+      </div>
+
+      {/* Title */}
+      <h4 className="text-xs font-bold text-default leading-snug">{item.title}</h4>
+
+      {/* Info */}
+      <div className="mt-2 space-y-1">
+        <div className="flex items-center gap-1 text-[11px] text-secondary">
+          <Building2 className="h-3 w-3 shrink-0 text-muted" />
+          <span className="truncate">{item.buyerOrgan}</span>
+        </div>
+        <div className="flex items-center gap-1 text-[11px] text-muted">
+          <MapPin className="h-3 w-3 shrink-0" />
+          {item.municipality} - RJ
+        </div>
+      </div>
+
+      {/* Value with flash for disputa */}
+      <div className="mt-2 flex items-center justify-between rounded-md bg-secondary px-2 py-1.5">
+        <span className="text-[10px] text-muted">
+          {item.column === 'disputa' ? 'Menor lance' : 'Valor'}
+        </span>
+        <span
+          className={`text-sm font-bold transition-colors duration-500 ${
+            flashClass || 'text-primary'
+          }`}
+        >
+          {formatBRL(item.estimatedValue)}
+        </span>
+      </div>
+
+      {/* Live competing bid indicator for disputa */}
+      {item.column === 'disputa' && (
+        <div className="mt-1 flex items-center gap-1 text-[10px] text-error">
+          <TrendingDown className="h-3 w-3" />
+          {item.competitorCount} competidores ativos
+        </div>
+      )}
+
+      {/* Footer */}
+      <div className="mt-2 flex items-center justify-between">
+        <CountdownTimer closesAt={item.closesAt} biddingStartsAt={item.biddingStartsAt} />
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onQuickMove();
+          }}
+          className="flex items-center gap-0.5 rounded-md px-1.5 py-1 text-[10px] font-semibold text-primary opacity-0 transition-opacity group-hover:opacity-100 hover:bg-primary-light"
+          title="Mover para próxima coluna"
+        >
+          <ArrowRight className="h-3 w-3" />
+        </button>
       </div>
     </div>
   );

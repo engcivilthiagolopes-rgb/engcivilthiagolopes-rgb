@@ -1,17 +1,19 @@
-import { Bell, Menu, Moon, RefreshCw, Search, Sun } from 'lucide-react';
+import { Bell, Menu, Moon, RefreshCw, Search, Sun, Wifi, WifiOff } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { USER_PROFILE } from '@/data/mockData';
+import { useProcurementSocket } from '@/context/ProcurementContext';
 
 interface HeaderProps {
   onMenuClick: () => void;
   notificationCount: number;
   onNotificationClick: () => void;
-  lastSync: Date;
 }
 
-export function Header({ onMenuClick, notificationCount, onNotificationClick, lastSync }: HeaderProps) {
+export function Header({ onMenuClick, notificationCount, onNotificationClick }: HeaderProps) {
   const { theme, toggleTheme } = useTheme();
+  const { socketStatus, lastSync } = useProcurementSocket();
 
+  const isConnected = socketStatus === 'connected';
   const syncTime = lastSync.toLocaleTimeString('pt-BR', {
     hour: '2-digit',
     minute: '2-digit',
@@ -39,6 +41,33 @@ export function Header({ onMenuClick, notificationCount, onNotificationClick, la
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3">
+        {/* Live Sync Indicator */}
+        <div
+          className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 transition-colors ${
+            isConnected
+              ? 'border-success/20 bg-success/5'
+              : 'border-warning/20 bg-warning/5'
+          }`}
+          title={isConnected ? 'PNCP Live Sync Active' : 'Reconnecting to PNCP...'}
+        >
+          {isConnected ? (
+            <Wifi className="h-3.5 w-3.5 text-success" />
+          ) : (
+            <WifiOff className="h-3.5 w-3.5 text-warning" />
+          )}
+          <div className="flex items-center gap-1.5 text-xs">
+            <span
+              className={`h-2 w-2 rounded-full ${
+                isConnected ? 'bg-success animate-pulse' : 'bg-warning animate-pulse'
+              }`}
+            />
+            <span className={`font-semibold ${isConnected ? 'text-success' : 'text-warning'}`}>
+              {isConnected ? 'PNCP Live Sync Active' : 'Reconnecting...'}
+            </span>
+          </div>
+        </div>
+
+        {/* Last sync time */}
         <div className="hidden sm:flex items-center gap-2 rounded-lg border bg-secondary px-3 py-1.5">
           <RefreshCw className="h-3.5 w-3.5 text-success" />
           <div className="text-xs">
@@ -47,7 +76,8 @@ export function Header({ onMenuClick, notificationCount, onNotificationClick, la
           </div>
         </div>
 
-        <div className="hidden md:flex items-center gap-1.5">
+        {/* Portal dots */}
+        <div className="hidden lg:flex items-center gap-1.5">
           <PortalSyncDot label="PNCP" color="bg-blue-500" />
           <PortalSyncDot label="Compras.gov" color="bg-emerald-500" />
           <PortalSyncDot label="SIGA-RJ" color="bg-amber-500" />
