@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: 255 255 255;
+    --bg-secondary: 248 250 252;
+    --bg-tertiary: 241 245 249;
+    --card: 255 255 255;
+    --border: 226 232 240;
+    --border-strong: 203 213 225;
+    --text: 15 23 42;
+    --text-secondary: 71 85 105;
+    --text-muted: 100 116 139;
+    --primary: 15 118 110;
+    --primary-hover: 13 101 94;
+    --primary-light: 236 253 250;
+    --secondary: 30 64 175;
+    --accent: 202 138 4;
+    --success: 22 163 74;
+    --warning: 217 119 6;
+    --error: 220 38 38;
+    --sidebar: 248 250 252;
+    --sidebar-border: 226 232 240;
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px 0 rgb(0 0 0 / 0.04);
+    --shadow-lg: 0 10px 25px -3px rgb(0 0 0 / 0.1), 0 4px 10px -2px rgb(0 0 0 / 0.04);
+  }
+
+  .dark {
+    --bg: 9 12 22;
+    --bg-secondary: 15 19 33;
+    --bg-tertiary: 22 28 45;
+    --card: 15 19 33;
+    --border: 38 45 64;
+    --border-strong: 51 61 85;
+    --text: 241 245 249;
+    --text-secondary: 186 194 214;
+    --text-muted: 130 138 160;
+    --primary: 20 184 166;
+    --primary-hover: 13 148 136;
+    --primary-light: 19 78 74;
+    --secondary: 59 130 246;
+    --accent: 245 158 11;
+    --success: 34 197 94;
+    --warning: 245 158 11;
+    --error: 248 113 113;
+    --sidebar: 12 16 28;
+    --sidebar-border: 38 45 64;
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px 0 rgb(0 0 0 / 0.2);
+    --shadow-lg: 0 10px 25px -3px rgb(0 0 0 / 0.4), 0 4px 10px -2px rgb(0 0 0 / 0.3);
+  }
+
+  * {
+    border-color: rgb(var(--border));
+  }
+
+  body {
+    background-color: rgb(var(--bg));
+    color: rgb(var(--text));
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer utilities {
+  .bg-app { background-color: rgb(var(--bg)); }
+  .bg-secondary { background-color: rgb(var(--bg-secondary)); }
+  .bg-tertiary { background-color: rgb(var(--bg-tertiary)); }
+  .bg-card { background-color: rgb(var(--card)); }
+  .bg-sidebar { background-color: rgb(var(--sidebar)); }
+  .bg-primary { background-color: rgb(var(--primary)); }
+  .bg-primary-hover { background-color: rgb(var(--primary-hover)); }
+  .bg-primary-light { background-color: rgb(var(--primary-light)); }
+  .bg-accent { background-color: rgb(var(--accent)); }
+  .bg-success { background-color: rgb(var(--success)); }
+  .bg-warning { background-color: rgb(var(--warning)); }
+  .bg-error { background-color: rgb(var(--error)); }
+
+  .text-default { color: rgb(var(--text)); }
+  .text-secondary { color: rgb(var(--text-secondary)); }
+  .text-muted { color: rgb(var(--text-muted)); }
+  .text-primary { color: rgb(var(--primary)); }
+  .text-secondary-color { color: rgb(var(--secondary)); }
+  .text-accent { color: rgb(var(--accent)); }
+  .text-success { color: rgb(var(--success)); }
+  .text-warning { color: rgb(var(--warning)); }
+  .text-error { color: rgb(var(--error)); }
+
+  .border-default { border-color: rgb(var(--border)); }
+  .border-strong { border-color: rgb(var(--border-strong)); }
+  .border-primary { border-color: rgb(var(--primary)); }
+  .border-success { border-color: rgb(var(--success)); }
+  .border-warning { border-color: rgb(var(--warning)); }
+  .border-error { border-color: rgb(var(--error)); }
+
+  .shadow-card { box-shadow: var(--shadow); }
+  .shadow-lg-card { box-shadow: var(--shadow-lg); }
+
+  .animate-pulse-red {
+    animation: pulse-red 2s ease-in-out infinite;
+  }
+  @keyframes pulse-red {
+    0%, 100% { box-shadow: 0 0 0 0 rgb(220 38 38 / 0.4); }
+    50% { box-shadow: 0 0 0 6px rgb(220 38 38 / 0); }
+  }
+
+  .animate-slide-in {
+    animation: slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes slide-in {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.2s ease-out;
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .animate-countdown {
+    animation: countdown-pulse 1s ease-in-out infinite;
+  }
+  @keyframes countdown-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgb(var(--border-strong));
+    border-radius: 3px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--text-muted));
+  }
+}
