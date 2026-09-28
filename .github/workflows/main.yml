@@ -1,0 +1,83 @@
+name: Gerar Componentes do App
+
+on:
+  workflow_dispatch: # Permite a execução manual pelo botão no GitHub
+
+jobs:
+  build-components:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Criar pastas de componentes caso não existam
+        run: mkdir -p src/components src/pages
+
+      - name: Criar componente de Login e Senha
+        run: |
+          cat << 'EOF' > src/pages/Login.tsx
+          import React, { useState } from 'react';
+
+          export default function Login() {
+            const [email, setEmail] = useState('');
+            const [password, setPassword] = useState('');
+
+            const handleLogin = (e: React.FormEvent) => {
+              e.preventDefault();
+              console.log('Autenticando no MEU FILTRO:', { email });
+            };
+
+            return (
+              <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white p-4">
+                <div className="bg-slate-800 p-8 rounded-xl shadow-2xl w-full max-w-md border border-slate-700">
+                  <h2 className="text-2xl font-bold text-center mb-2">🏛️ MEU FILTRO</h2>
+                  <p className="text-slate-400 text-sm text-center mb-6">Painel de Licitações do Rio de Janeiro</p>
+                  
+                  <form onSubmit={handleLogin} className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">E-mail de Acesso</label>
+                      <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full p-2.5 rounded bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" placeholder="seu@email.com" required />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Senha</label>
+                      <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full p-2.5 rounded bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" placeholder="••••••••" required />
+                    </div>
+                    <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 p-2.5 rounded font-medium transition-colors mt-2">Acessar Painel</button>
+                  </form>
+                </div>
+              </div>
+            );
+          }
+          EOF
+
+      - name: Criar componente da Aba de Fornecedores B2B
+        run: |
+          cat << 'EOF' > src/components/SidebarFornecedores.tsx
+          import React from 'react';
+          import { Truck, ChevronRight } from 'lucide-react';
+
+          export default function SidebarFornecedores() {
+            return (
+              <div className="flex items-center justify-between p-3 my-1 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white cursor-pointer transition-all">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-emerald-600/20 text-emerald-400 rounded-md">
+                    <Truck size={18} />
+                  </div>
+                  <div>
+                    <span className="font-medium text-sm block">Fornecedores (CNAEs)</span>
+                    <span className="text-xs text-slate-400 block">Atacadistas Inteligentes</span>
+                  </div>
+                </div>
+                <ChevronRight size={16} className="text-slate-500" />
+              </div>
+            );
+          }
+          EOF
+
+      - name: Commitar e Enviar os arquivos para o repositório
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@://github.com"
+          git add src/pages/Login.tsx src/components/SidebarFornecedores.tsx
+          git commit -m "feat: adicionado componentes de login e aba de fornecedores cnaes" || echo "Nenhuma mudança para commitar"
+          git push origin main
