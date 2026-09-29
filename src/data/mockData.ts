@@ -56,7 +56,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
     region: 'Serrana',
     cnaeMatch: '4761-0/03',
     closesAt: hoursFromNow(2.75),
-    timeLeft: Math.floor(2.75 * 3600),
+    timeLeft: Math.floor(2.75 * 3600), // 💡 Cole esta linha (equivale a 2h 45m)
     biddingStartsAt: null,
     status: 'open',
     column: 'triagem',
@@ -85,7 +85,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
     region: 'Capital',
     cnaeMatch: '4754-7/01',
     closesAt: hoursFromNow(6.5),
-    timeLeft: Math.floor(6.5 * 3600),
+    timeLeft: Math.floor(6.5 * 3600), // 💡 Cole esta linha (equivale a 6h 30m)
     biddingStartsAt: null,
     status: 'open',
     column: 'triagem',
@@ -114,7 +114,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
     region: 'Metropolitana',
     cnaeMatch: '4789-0/05',
     closesAt: hoursFromNow(0.5),
-    timeLeft: Math.floor(0.5 * 3600),
+    timeLeft: Math.floor(0.5 * 3600), // 💡 Cole esta linha (equivale a 30 min)
     biddingStartsAt: null,
     status: 'open',
     column: 'disputa',
@@ -143,7 +143,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
     region: 'Serrana',
     cnaeMatch: '4742-3/00',
     closesAt: hoursFromNow(12),
-    timeLeft: Math.floor(12 * 3600),
+    timeLeft: Math.floor(12 * 3600), // 💡 Cole esta linha (equivale a 12 horas)
     biddingStartsAt: hoursFromNow(4),
     status: 'open',
     column: 'analise',
@@ -172,7 +172,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
     region: 'Capital',
     cnaeMatch: '4744-0/01',
     closesAt: hoursFromNow(8),
-    timeLeft: Math.floor(8 * 3600),
+    timeLeft: Math.floor(8 * 3600), // 💡 Cole esta linha (equivale a 8 horas)
     biddingStartsAt: null,
     status: 'open',
     column: 'analise',
@@ -201,7 +201,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
     region: 'Serrana',
     cnaeMatch: '4744-0/03',
     closesAt: hoursFromNow(3.5),
-    timeLeft: Math.floor(3.5 * 3600),
+    timeLeft: Math.floor(3.5 * 3600), // 💡 Cole esta linha (equivale a 3h 30m)
     biddingStartsAt: null,
     status: 'open',
     column: 'proposta',
@@ -230,7 +230,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
     region: 'Serrana',
     cnaeMatch: '4741-5/00',
     closesAt: hoursFromNow(48),
-    timeLeft: Math.floor(48 * 3600),
+    timeLeft: Math.floor(48 * 3600), // 💡 Cole esta linha (equivale a 48 horas)
     biddingStartsAt: hoursFromNow(24),
     status: 'open',
     column: 'analise',
@@ -259,7 +259,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
     region: 'Metropolitana',
     cnaeMatch: '4789-0/07',
     closesAt: hoursFromNow(24),
-    timeLeft: Math.floor(24 * 3600),
+    timeLeft: Math.floor(24 * 3600), // 💡 Cole esta linha (equivale a 24 horas)
     biddingStartsAt: null,
     status: 'open',
     column: 'triagem',
@@ -288,7 +288,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
     region: 'Capital',
     cnaeMatch: '4789-0/07',
     closesAt: hoursFromNow(1.2),
-    timeLeft: Math.floor(1.2 * 3600),
+    timeLeft: Math.floor(1.2 * 3600), // 💡 Cole esta linha (equivale a 1h 12m)
     biddingStartsAt: null,
     status: 'open',
     column: 'disputa',
@@ -317,7 +317,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
     region: 'Norte Fluminense',
     cnaeMatch: '4754-7/01',
     closesAt: hoursFromNow(72),
-    timeLeft: Math.floor(72 * 3600),
+    timeLeft: Math.floor(72 * 3600), // 💡 Cole esta linha (equivale a 72 horas)
     biddingStartsAt: hoursFromNow(48),
     status: 'open',
     column: 'homologada',
