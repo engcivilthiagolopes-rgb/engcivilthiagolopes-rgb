@@ -263,7 +263,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, 1000);
 
     return () => clearInterval(sincronizadorPrazosOficiais);
-  }, []); // 💡 O código deve fechar exatamente aqui! Delete tudo o que estiver sobrando entre esse ponto e a simulação de lances ("updateBiddingPrices").
+  }, []);
 
    // SIMULAÇÃO DE DISPUTA DE LANCES ATIVA E COMPLETA
   useEffect(() => {
