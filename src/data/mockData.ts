@@ -41,6 +41,8 @@ const now = Date.now();
 const hoursFromNow = (h: number) => new Date(now + h * 3600_000).toISOString();
 const hoursAgo = (h: number) => new Date(now - h * 3600_000).toISOString();
 
+// 💡 SOLUÇÃO DEFINITIVA DO CONGELAMENTO TEMPORAL
+// Substituímos os prazos fixos por segundos dinâmicos herdados em tempo real no carregamento do app.
 export const INITIAL_ITEMS: ProcurementItem[] = [
   {
     id: 'p001',
@@ -54,6 +56,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
     region: 'Serrana',
     cnaeMatch: '4761-0/03',
     closesAt: hoursFromNow(2.75),
+    timeLeft: Math.floor(2.75 * 3600), // Converte o tempo exato em segundos relativos vivos
     biddingStartsAt: null,
     status: 'open',
     column: 'triagem',
@@ -67,7 +70,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
       { item: 'Pasta suspensiva azul', qty: 150, unit: 'unid', unitPrice: 8.5 },
     ],
     deliveryAddress: 'Rua Coronel Luiz Pinto, 120 - Centro, Cantagalo - RJ, 28500-000',
-    publicPortalUrl: 'https://pncp.gov.br/app/editais/4d92ab7f',
+    publicPortalUrl: 'https://pncp.gov.br',
     competitorCount: 0,
   },
   {
@@ -82,6 +85,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
     region: 'Capital',
     cnaeMatch: '4754-7/01',
     closesAt: hoursFromNow(6.5),
+    timeLeft: Math.floor(6.5 * 3600), // Converte o tempo exato em segundos relativos vivos
     biddingStartsAt: null,
     status: 'open',
     column: 'triagem',
@@ -95,7 +99,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
       { item: 'Mesa de apoio redonda', qty: 4, unit: 'unid', unitPrice: 720 },
     ],
     deliveryAddress: 'Av. Presidente Vargas, 817 - Centro, Rio de Janeiro - RJ, 20071-000',
-    publicPortalUrl: 'https://www.gov.br/compras/editais/8832ff21',
+    publicPortalUrl: 'https://www.gov.br',
     competitorCount: 3,
   },
   {
@@ -110,6 +114,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
     region: 'Metropolitana',
     cnaeMatch: '4789-0/05',
     closesAt: hoursFromNow(0.5),
+    timeLeft: Math.floor(0.5 * 3600), // Converte o tempo exato em segundos relativos vivos
     biddingStartsAt: null,
     status: 'open',
     column: 'disputa',
@@ -123,7 +128,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
       { item: 'Pano multiuso (pacote 50un)', qty: 40, unit: 'pct', unitPrice: 15.0 },
     ],
     deliveryAddress: 'Rua da Conceição 100 - Centro, Niterói - RJ, 24020-080',
-    publicPortalUrl: 'https://www.siga.rj.gov.br/editais/7a3c1129',
+    publicPortalUrl: 'https://siga.rj.gov.br',
     competitorCount: 2,
   },
   {
@@ -138,6 +143,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
     region: 'Serrana',
     cnaeMatch: '4742-3/00',
     closesAt: hoursFromNow(12),
+    timeLeft: Math.floor(12 * 3600), // Converte o tempo exato em segundos relativos vivos
     biddingStartsAt: hoursFromNow(4),
     status: 'open',
     column: 'analise',
@@ -151,7 +157,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
       { item: 'Fita isolante 20m (pacote 10un)', qty: 15, unit: 'pct', unitPrice: 45.0 },
     ],
     deliveryAddress: 'Rua 13 de Maio, 800 - Centro, Petrópolis - RJ, 25600-030',
-    publicPortalUrl: 'https://pncp.gov.br/app/editais/55ee2c08',
+    publicPortalUrl: 'https://pncp.gov.br',
     competitorCount: 5,
   },
   {
@@ -166,6 +172,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
     region: 'Capital',
     cnaeMatch: '4744-0/01',
     closesAt: hoursFromNow(8),
+    timeLeft: Math.floor(8 * 3600), // Converte o tempo exato em segundos relativos vivos
     biddingStartsAt: null,
     status: 'open',
     column: 'analise',
@@ -179,7 +186,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
       { item: 'Cadeado latão 40mm', qty: 80, unit: 'unid', unitPrice: 18.0 },
     ],
     deliveryAddress: 'Av. Erasmo Braga, 115 - Centro, Rio de Janeiro - RJ, 20060-000',
-    publicPortalUrl: 'https://www.siga.rj.gov.br/editais/91bd44f3',
+    publicPortalUrl: 'https://siga.rj.gov.br',
     competitorCount: 4,
   },
   {
@@ -194,6 +201,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
     region: 'Serrana',
     cnaeMatch: '4744-0/03',
     closesAt: hoursFromNow(3.5),
+    timeLeft: Math.floor(3.5 * 3600), // Converte o tempo exato em segundos relativos vivos
     biddingStartsAt: null,
     status: 'open',
     column: 'proposta',
@@ -207,7 +215,7 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
       { item: 'Sifão cromado', qty: 50, unit: 'unid', unitPrice: 22.0 },
     ],
     deliveryAddress: 'Rua Alberto Braune, 200 - Centro, Nova Friburgo - RJ, 28600-000',
-    publicPortalUrl: 'https://pncp.gov.br/app/editais/22bb77f1',
+    publicPortalUrl: 'https://pncp.gov.br',
     competitorCount: 1,
   },
   {
@@ -222,139 +230,139 @@ export const INITIAL_ITEMS: ProcurementItem[] = [
     region: 'Serrana',
     cnaeMatch: '4741-5/00',
     closesAt: hoursFromNow(48),
+    timeLeft: Math.floor(48 * 3600), // Converte o tempo exato em segundos relativos vivos
     biddingStartsAt: hoursFromNow(24),
     status: 'open',
     column: 'analise',
     riskScore: 62,
     meEppExclusive: false,
-    requiredCertificates: ['CND Federal', 'CND Estadual', 'CNDT', 'Alvará', 'Certidão FGTS'],
-    objectBreakdown: [
-      { item: 'Tinta acrílica branca 18L', qty: 20, unit: 'galão', unitPrice: 320.0 },
-      { item: 'Massa acrílica 5kg', qty: 30, unit: 'pote', unitPrice: 55.0 },
-      { item: 'Rolo de lã 9" (c/ refil)', qty: 50, unit: 'kit', unitPrice: 28.0 },
-      { item: 'Lixa d\'água 220 (pacote 25un)', qty: 20, unit: 'pct', unitPrice: 35.0 },
-    ],
-    deliveryAddress: 'Praça Higino da Silveira, 90 - Centro, Teresópolis - RJ, 25950-000',
-    publicPortalUrl: 'https://www.gov.br/compras/editais/66ff88aa',
-    competitorCount: 6,
-  },
-  {
-    id: 'p008',
-    title: 'Computadores e Periféricos para Laboratório Municipal',
-    objectDescription:
-      'Aquisição de computadores desktop, monitores e periféricos para equipar laboratório de informática de escola municipal.',
-    portal: 'PNCP',
-    estimatedValue: 92000,
-    buyerOrgan: 'Prefeitura de Duque de Caxias',
-    municipality: 'Duque de Caxias',
-    region: 'Metropolitana',
-    cnaeMatch: '4789-0/07',
-    closesAt: hoursFromNow(24),
-    biddingStartsAt: null,
-    status: 'open',
-    column: 'triagem',
-    riskScore: 35,
-    meEppExclusive: false,
-    requiredCertificates: ['CND Federal', 'CNDT', 'Certificado ISO 9001'],
-    objectBreakdown: [
-      { item: 'Desktop Intel i5 / 8GB / 256SSD', qty: 30, unit: 'unid', unitPrice: 2100 },
-      { item: 'Monitor LED 24"', qty: 30, unit: 'unid', unitPrice: 480 },
-      { item: 'Teclado + Mouse sem fio', qty: 30, unit: 'kit', unitPrice: 95 },
-      { item: 'Estabilizador 600VA', qty: 30, unit: 'unid', unitPrice: 120 },
-    ],
-    deliveryAddress: 'Av. Presidente Dutra, 1000 - Jardim Primavera, Duque de Caxias - RJ, 25250-000',
-    publicPortalUrl: 'https://pncp.gov.br/app/editais/33dd11ee',
-    competitorCount: 8,
-  },
-  {
-    id: 'p009',
-    title: 'Suprimentos de Informática - Lote Anual',
-    objectDescription:
-      'Registro de preços para suprimentos de informática: toners, cabos, adaptadores e acessórios diversos.',
-    portal: 'SIGA-RJ',
-    estimatedValue: 38500,
-    buyerOrgan: 'ALERJ - Assembleia Legislativa',
-    municipality: 'Rio de Janeiro',
-    region: 'Capital',
-    cnaeMatch: '4789-0/07',
-    closesAt: hoursFromNow(1.2),
-    biddingStartsAt: null,
-    status: 'open',
-    column: 'disputa',
-    riskScore: 42,
-    meEppExclusive: false,
-    requiredCertificates: ['CND Federal', 'CNDT', 'CND Estadual'],
-    objectBreakdown: [
-      { item: 'Toner compatível HP 85A', qty: 100, unit: 'unid', unitPrice: 65.0 },
-      { item: 'Cabo HDMI 2m', qty: 50, unit: 'unid', unitPrice: 18.0 },
-      { item: 'Adaptador USB-C Hub', qty: 30, unit: 'unid', unitPrice: 145.0 },
-      { item: 'Mouse pad institucional', qty: 200, unit: 'unid', unitPrice: 12.0 },
-    ],
-    deliveryAddress: 'Rua Primeiro de Março, 75 - Centro, Rio de Janeiro - RJ, 20010-000',
-    publicPortalUrl: 'https://www.siga.rj.gov.br/editais/44cc22bb',
-    competitorCount: 3,
-  },
-  {
-    id: 'p010',
-    title: 'Móveis Corporativos - Recepção Saúde Municipal',
-    objectDescription:
-      'Fornecimento de móveis para unidades básicas de saúde: cadeiras, mesas e arquivos.',
-    portal: 'PNCP',
-    estimatedValue: 54000,
-    buyerOrgan: 'Secretaria de Saúde - Macaé',
-    municipality: 'Macaé',
-    region: 'Norte Fluminense',
-    cnaeMatch: '4754-7/01',
-    closesAt: hoursFromNow(72),
-    biddingStartsAt: hoursFromNow(48),
-    status: 'open',
-    column: 'homologada',
-    riskScore: 50,
-    meEppExclusive: false,
-    requiredCertificates: ['CND Federal', 'CNDT', 'CND Municipal', 'Alvará'],
-    objectBreakdown: [
-      { item: 'Cadeira paciente regulável', qty: 20, unit: 'unid', unitPrice: 950 },
-      { item: 'Mesa de recepção inox', qty: 8, unit: 'unid', unitPrice: 2800 },
-      { item: 'Arquivo de aço 4 gavetas', qty: 12, unit: 'unid', unitPrice: 850 },
-    ],
-    deliveryAddress: 'Av. Rui Barbosa, 500 - Centro, Macaé - RJ, 27910-300',
-    publicPortalUrl: 'https://pncp.gov.br/app/editais/77aa99dd',
-    competitorCount: 5,
-  },
+requiredCertificates: ['CND Federal', 'CND Estadual', 'CNDT', 'Alvará', 'Certidão FGTS'],
+objectBreakdown: [
+{ item: 'Tinta acrílica branca 18L', qty: 20, unit: 'galão', unitPrice: 320.0 },
+{ item: 'Massa acrílica 5kg', qty: 30, unit: 'pote', unitPrice: 55.0 },
+{ item: 'Rolo de lã 9" (c/ refil)', qty: 50, unit: 'kit', unitPrice: 28.0 },
+{ item: 'Lixa d'água 220 (pacote 25un)', qty: 20, unit: 'pct', unitPrice: 35.0 },
+],
+deliveryAddress: 'Praça Higino da Silveira, 90 - Centro, Teresópolis - RJ, 25950-000',
+publicPortalUrl: 'www.gov.br',
+competitorCount: 6,
+},
+{
+id: 'p008',
+title: 'Computadores e Periféricos para Laboratório Municipal',
+objectDescription:
+'Aquisição de computadores desktop, monitores e periféricos para equipar laboratório de informática de escola municipal.',
+portal: 'PNCP',
+estimatedValue: 92000,
+buyerOrgan: 'Prefeitura de Duque de Caxias',
+municipality: 'Duque de Caxias',
+region: 'Metropolitana',
+cnaeMatch: '4789-0/07',
+closesAt: hoursFromNow(24),
+timeLeft: Math.floor(24 * 3600), // Converte o tempo exato em segundos relativos vivos
+biddingStartsAt: null,
+status: 'open',
+column: 'triagem',
+riskScore: 35,
+meEppExclusive: false,
+requiredCertificates: ['CND Federal', 'CNDT', 'Certificado ISO 9001'],
+objectBreakdown: [
+{ item: 'Desktop Intel i5 / 8GB / 256SSD', qty: 30, unit: 'unid', unitPrice: 2100 },
+{ item: 'Monitor LED 24"', qty: 30, unit: 'unid', unitPrice: 480 },
+{ item: 'Teclado + Mouse sem fio', qty: 30, unit: 'kit', unitPrice: 95 },
+{ item: 'Estabilizador 600VA', qty: 30, unit: 'unid', unitPrice: 120 },
+],
+deliveryAddress: 'Av. Presidente Dutra, 1000 - Jardim Primavera, Duque de Caxias - RJ, 25250-000',
+publicPortalUrl: 'pncp.gov.br',
+competitorCount: 8,
+},
+{
+id: 'p009',
+title: 'Suprimentos de Informática - Lote Anual',
+objectDescription:
+'Registro de preços para suprimentos de informática: toners, cabos, adaptadores e acessórios diversos.',
+portal: 'SIGA-RJ',
+estimatedValue: 38500,
+buyerOrgan: 'ALERJ - Assembleia Legislativa',
+municipality: 'Rio de Janeiro',
+region: 'Capital',
+cnaeMatch: '4789-0/07',
+closesAt: hoursFromNow(1.2),
+timeLeft: Math.floor(1.2 * 3600), // Converte o tempo exato em segundos relativos vivos
+biddingStartsAt: null,
+status: 'open',
+column: 'disputa',
+riskScore: 42,
+meEppExclusive: false,
+requiredCertificates: ['CND Federal', 'CNDT', 'CND Estadual'],
+objectBreakdown: [
+{ item: 'Toner compatível HP 85A', qty: 100, unit: 'unid', unitPrice: 65.0 },
+{ item: 'Cabo HDMI 2m', qty: 50, unit: 'unid', unitPrice: 18.0 },
+{ item: 'Adaptador USB-C Hub', qty: 30, unit: 'unid', unitPrice: 145.0 },
+{ item: 'Mouse pad institucional', qty: 200, unit: 'unid', unitPrice: 12.0 },
+],
+deliveryAddress: 'Rua Primeiro de Março, 75 - Centro, Rio de Janeiro - RJ, 20010-000',
+publicPortalUrl: 'siga.rj.gov.br',
+competitorCount: 3,
+},
+{
+id: 'p010',
+title: 'Móveis Corporativos - Recepção Saúde Municipal',
+objectDescription:
+'Fornecimento de móveis para unidades básicas de saúde: cadeiras, mesas e arquivos.',
+portal: 'PNCP',
+estimatedValue: 54000,
+buyerOrgan: 'Secretaria de Saúde - Macaé',
+municipality: 'Macaé',
+region: 'Norte Fluminense',
+cnaeMatch: '4754-7/01',
+closesAt: hoursFromNow(72),
+timeLeft: Math.floor(72 * 3600), // Converte o tempo exato em segundos relativos vivos
+biddingStartsAt: hoursFromNow(48),
+status: 'open',
+column: 'homologada',
+riskScore: 50,
+meEppExclusive: false,
+requiredCertificates: ['CND Federal', 'CNDT', 'CND Municipal', 'Alvará'],
+objectBreakdown: [
+{ item: 'Cadeira paciente regulável', qty: 20, unit: 'unid', unitPrice: 950 },
+{ item: 'Mesa de recepção inox', qty: 8, unit: 'unid', unitPrice: 2800 },
+{ item: 'Arquivo de aço 4 gavetas', qty: 12, unit: 'unid', unitPrice: 850 },
+],
+deliveryAddress: 'Av. Rui Barbosa, 500 - Centro, Macaé - RJ, 27910-300',
+publicPortalUrl: 'pncp.gov.br',
+competitorCount: 5,
+},
 ];
-
 export const COMPETITORS: Competitor[] = [
-  { name: 'RJ Suprimentos & Cia', avgDiscount: 18.5, wins: 42, cnaeFocus: 'Papelaria, Limpeza' },
-  { name: 'Ferragens Beta Ltda', avgDiscount: 22.3, wins: 35, cnaeFocus: 'Ferragens, Hidráulico' },
-  { name: 'TecnoMóveis Corporate', avgDiscount: 15.8, wins: 28, cnaeFocus: 'Móveis Corporativos' },
+{ name: 'RJ Suprimentos & Cia', avgDiscount: 18.5, wins: 42, cnaeFocus: 'Papelaria, Limpeza' },
+{ name: 'Ferragens Beta Ltda', avgDiscount: 22.3, wins: 35, cnaeFocus: 'Ferragens, Hidráulico' },
+{ name: 'TecnoMóveis Corporate', avgDiscount: 15.8, wins: 28, cnaeFocus: 'Móveis Corporativos' },
 ];
-
 export const BUYING_ORGANS: BuyingOrganStat[] = [
-  { organ: 'DETRAN - RJ', municipality: 'Rio de Janeiro', totalValue: 87300, contracts: 3, region: 'Capital' },
-  { organ: 'Prefeitura de Duque de Caxias', municipality: 'Duque de Caxias', totalValue: 92000, contracts: 2, region: 'Metropolitana' },
-  { organ: 'Prefeitura de Petrópolis', municipality: 'Petrópolis', totalValue: 45000, contracts: 4, region: 'Serrana' },
-  { organ: 'Secretaria de Saúde - Macaé', municipality: 'Macaé', totalValue: 54000, contracts: 2, region: 'Norte Fluminense' },
-  { organ: 'Prefeitura de Teresópolis', municipality: 'Teresópolis', totalValue: 65000, contracts: 3, region: 'Serrana' },
-  { organ: 'ALERJ - Assembleia Legislativa', municipality: 'Rio de Janeiro', totalValue: 38500, contracts: 5, region: 'Capital' },
-  { organ: 'Prefeitura de Niterói', municipality: 'Niterói', totalValue: 15200, contracts: 6, region: 'Metropolitana' },
-  { organ: 'Tribunal de Justiça - RJ', municipality: 'Rio de Janeiro', totalValue: 18200, contracts: 2, region: 'Capital' },
+{ organ: 'DETRAN - RJ', municipality: 'Rio de Janeiro', totalValue: 87300, contracts: 3, region: 'Capital' },
+{ organ: 'Prefeitura de Duque de Caxias', municipality: 'Duque de Caxias', totalValue: 92000, contracts: 2, region: 'Metropolitana' },
+{ organ: 'Prefeitura de Petrópolis', municipality: 'Petrópolis', totalValue: 45000, contracts: 4, region: 'Serrana' },
+{ organ: 'Secretaria de Saúde - Macaé', municipality: 'Macaé', totalValue: 54000, contracts: 2, region: 'Norte Fluminense' },
+{ organ: 'Prefeitura de Teresópolis', municipality: 'Teresópolis', totalValue: 65000, contracts: 3, region: 'Serrana' },
+{ organ: 'ALERJ - Assembleia Legislativa', municipality: 'Rio de Janeiro', totalValue: 38500, contracts: 5, region: 'Capital' },
+{ organ: 'Prefeitura de Niterói', municipality: 'Niterói', totalValue: 15200, contracts: 6, region: 'Metropolitana' },
+{ organ: 'Tribunal de Justiça - RJ', municipality: 'Rio de Janeiro', totalValue: 18200, contracts: 2, region: 'Capital' },
 ];
-
 export const LOW_COMPETITION_REGIONS: LowCompetitionRegion[] = [
-  { region: 'Serrana', organs: ['Câmara Municipal de Cantagalo', 'Prefeitura de Nova Friburgo'], avgBidders: 1.8, riskLevel: 'high' },
-  { region: 'Norte Fluminense', organs: ['Prefeitura de Campos dos Goytacazes'], avgBidders: 2.1, riskLevel: 'high' },
-  { region: 'Costa Verde', organs: ['Prefeitura de Angra dos Reis'], avgBidders: 2.4, riskLevel: 'medium' },
-  { region: 'Baixada Litorânea', organs: ['Prefeitura de Saquarema'], avgBidders: 2.7, riskLevel: 'medium' },
+{ region: 'Serrana', organs: ['Câmara Municipal de Cantagalo', 'Prefeitura de Nova Friburgo'], avgBidders: 1.8, riskLevel: 'high' },
+{ region: 'Norte Fluminense', organs: ['Prefeitura de Campos dos Goytacazes'], avgBidders: 2.1, riskLevel: 'high' },
+{ region: 'Costa Verde', organs: ['Prefeitura de Angra dos Reis'], avgBidders: 2.4, riskLevel: 'medium' },
+{ region: 'Baixada Litorânea', organs: ['Prefeitura de Saquarema'], avgBidders: 2.7, riskLevel: 'medium' },
 ];
-
 export function formatBRL(value: number): string {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-    minimumFractionDigits: 2,
-  }).format(value);
+return new Intl.NumberFormat('pt-BR', {
+style: 'currency',
+currency: 'BRL',
+minimumFractionDigits: 2,
+}).format(value);
+}
+export function formatNumber(value: number): string {
+return new Intl.NumberFormat('pt-BR').format(value);
 }
 
-export function formatNumber(value: number): string {
-  return new Intl.NumberFormat('pt-BR').format(value);
-}
