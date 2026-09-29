@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import type { AlertSettings, Cnae, KanbanColumn, ProcurementItem, Portal } from '@/types';
+import type { AlertSettings, Cnae, KanbanColumn, MultiChannelAlertConfig, ProcurementItem, Portal } from '@/types';
 import { INITIAL_CNAES, INITIAL_ITEMS } from '@/data/mockData';
 import { generateProcurementItem } from '@/data/generator';
 import type { AppNotification } from '@/components/NotificationPanel';
@@ -19,6 +19,21 @@ export interface ToastData {
   title: string;
   message: string;
   itemId: string;
+}
+
+export interface WhatsAppToastData {
+  id: string;
+  organ: string;
+  objeto: string;
+  cnaeName: string;
+  valor: number;
+  margemEst: number;
+  faseLances: string;
+  itemId: string;
+}
+
+export interface TestMessageState {
+  status: 'idle' | 'loading' | 'success';
 }
 
 interface ProcurementContextValue {
@@ -36,6 +51,10 @@ interface ProcurementContextValue {
   alerts: AlertSettings;
   setAlerts: (alerts: AlertSettings) => void;
 
+  // Multi-channel alert config
+  channelConfig: MultiChannelAlertConfig;
+  setChannelConfig: (cfg: MultiChannelAlertConfig) => void;
+
   // Notifications
   notifications: AppNotification[];
   addNotification: (n: AppNotification) => void;
@@ -48,6 +67,14 @@ interface ProcurementContextValue {
   // Toasts
   toasts: ToastData[];
   dismissToast: (id: string) => void;
+
+  // WhatsApp toasts
+  waToasts: WhatsAppToastData[];
+  dismissWaToast: (id: string) => void;
+
+  // Test message
+  testMessageState: TestMessageState;
+  sendTestMessage: () => void;
 
   // Manual injection
   injectUrgentItem: () => ProcurementItem;
@@ -92,9 +119,25 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
   const [socketStatus, setSocketStatus] = useState<SocketStatus>('connected');
   const [lastSync, setLastSync] = useState(new Date());
   const [toasts, setToasts] = useState<ToastData[]>([]);
+  const [waToasts, setWaToasts] = useState<WhatsAppToastData[]>([]);
+  const [channelConfig, setChannelConfig] = useState<MultiChannelAlertConfig>({
+    whatsapp: {
+      enabled: true,
+      phoneNumber: '(21) 98675-9394',
+      apiConnected: true,
+    },
+    telegram: {
+      enabled: false,
+      chatId: '@matiaslicitacoes',
+    },
+    minMarginROI: 15,
+  });
+  const [testMessageState, setTestMessageState] = useState<TestMessageState>({ status: 'idle' });
 
   const alertsRef = useRef(alerts);
   alertsRef.current = alerts;
+  const channelConfigRef = useRef(channelConfig);
+  channelConfigRef.current = channelConfig;
 
   // --- Core mutations ---
 
@@ -122,6 +165,10 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
   const dismissToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  const dismissWaToast = useCallback((id: string) => {
+    setWaToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
   // --- Toast + notification pipeline ---
@@ -154,8 +201,31 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
 
       // Auto-dismiss toast after 8 seconds
       setTimeout(() => dismissToast(toastId), 8000);
+
+      // --- Multi-channel alert routing ---
+      // If WhatsApp alerts are enabled and the estimated margin exceeds the ROI threshold,
+      // trigger a smartphone-style WhatsApp push toast.
+      const cfg = channelConfigRef.current;
+      const estimatedMargin = estimateMargin(item);
+      if (cfg.whatsapp.enabled && cfg.whatsapp.apiConnected && estimatedMargin >= cfg.minMarginROI) {
+        const waId = `wa${Date.now()}`;
+        setWaToasts((prev) => [
+          ...prev,
+          {
+            id: waId,
+            organ: `${item.buyerOrgan} - RJ`,
+            objeto: `[${formatCnaeName(item.cnaeMatch)}] ${item.title}`,
+            cnaeName: formatCnaeName(item.cnaeMatch),
+            valor: item.estimatedValue,
+            margemEst: estimatedMargin,
+            faseLances: formatBiddingTime(item.biddingStartsAt, item.closesAt),
+            itemId: item.id,
+          },
+        ]);
+        setTimeout(() => dismissWaToast(waId), 12000);
+      }
     },
-    [addItem, addNotification, dismissToast],
+    [addItem, addNotification, dismissToast, dismissWaToast],
   );
 
   // --- Manual injection ---
@@ -212,6 +282,14 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(interval);
   }, []);
 
+  const sendTestMessage = useCallback(() => {
+    setTestMessageState({ status: 'loading' });
+    setTimeout(() => {
+      setTestMessageState({ status: 'success' });
+      setTimeout(() => setTestMessageState({ status: 'idle' }), 3000);
+    }, 2500);
+  }, []);
+
   const value: ProcurementContextValue = {
     items,
     addItem,
@@ -221,6 +299,8 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     toggleCnae,
     alerts,
     setAlerts,
+    channelConfig,
+    setChannelConfig,
     notifications,
     addNotification,
     clearNotifications,
@@ -228,6 +308,10 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     lastSync,
     toasts,
     dismissToast,
+    waToasts,
+    dismissWaToast,
+    testMessageState,
+    sendTestMessage,
     injectUrgentItem,
   };
 
@@ -249,6 +333,19 @@ function formatBRLShort(value: number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(value);
+}
+
+function estimateMargin(_item: ProcurementItem): number {
+  return 15 + Math.floor(Math.random() * 20);
+}
+
+function formatBiddingTime(biddingStartsAt: string | null, closesAt: string): string {
+  const target = biddingStartsAt || closesAt;
+  const date = new Date(target);
+  const today = new Date();
+  const isToday = date.toDateString() === today.toDateString();
+  const time = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  return isToday ? `HOJE às ${time} (Prazo Curto!)` : date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ` às ${time}`;
 }
 
 function formatCnaeName(code: string): string {

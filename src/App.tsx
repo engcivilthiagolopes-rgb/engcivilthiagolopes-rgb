@@ -6,6 +6,7 @@ import { Header } from '@/components/layout/Header';
 import { NotificationPanel } from '@/components/NotificationPanel';
 import { DetailModal } from '@/components/DetailModal';
 import { ToastContainer } from '@/components/ToastContainer';
+import { WhatsAppToastContainer } from '@/components/WhatsAppToastContainer';
 import { DevControlPanel } from '@/components/DevControlPanel';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { KanbanPage } from '@/pages/KanbanPage';
@@ -238,6 +239,7 @@ function AppContent() {
         onSendToKanban={handleSendToKanban}
       />
       <ToastContainer onOpenInFunnel={handleOpenInFunnel} />
+      <WhatsAppToastContainer onOpenInFunnel={handleOpenInFunnel} />
       <DevControlPanel />
     </div>
   );

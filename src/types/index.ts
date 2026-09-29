@@ -44,6 +44,19 @@ export interface AlertSettings {
   email: boolean;
 }
 
+export interface MultiChannelAlertConfig {
+  whatsapp: {
+    enabled: boolean;
+    phoneNumber: string;
+    apiConnected: boolean;
+  };
+  telegram: {
+    enabled: boolean;
+    chatId: string;
+  };
+  minMarginROI: number;
+}
+
 export interface Competitor {
   name: string;
   avgDiscount: number;
