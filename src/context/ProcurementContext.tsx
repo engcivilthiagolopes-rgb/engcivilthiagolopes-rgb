@@ -265,29 +265,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(sincronizadorPrazosOficiais);
   }, []); // 💡 O código deve fechar exatamente aqui! Delete tudo o que estiver sobrando entre esse ponto e a simulação de lances ("updateBiddingPrices").
 
-    return () => clearInterval(relogioCentral);
-  }, []);
-
-  useEffect(() => {
-    const poll = () => {
-      setLastSync(new Date());
-
-      if (Math.random() < 0.05) {
-        setSocketStatus('reconnecting');
-        setTimeout(() => setSocketStatus('connected'), 2000 + Math.random() * 2000);
-      }
-
-      if (Math.random() < 0.5) {
-        const item = generateProcurementItem(false);
-        emitNewDispensa(item);
-      }
-    };
-
-    const interval = setInterval(poll, 45_000);
-    return () => clearInterval(interval);
-  }, [emitNewDispensa]);
-
-  // SIMULAÇÃO DE DISPUTA DE LANCES ATIVA E COMPLETA
+   // SIMULAÇÃO DE DISPUTA DE LANCES ATIVA E COMPLETA
   useEffect(() => {
     const updateBiddingPrices = () => {
       setItems((prev) =>
