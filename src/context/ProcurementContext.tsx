@@ -242,7 +242,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, 1500);
   }, []);
 
-  // ⚡ MOTOR DE SINCRONIZAÇÃO EM TEMPO REAL COM OS SITES DE LICITAÇÃO
+    // ⚡ MOTOR DE SINCRONIZAÇÃO EM TEMPO REAL COM OS SITES DE LICITAÇÃO
   // Executa a cada 1 segundo, calculando o prazo oficial do edital contra a hora atual do sistema
   useEffect(() => {
     const sincronizadorPrazosOficiais = setInterval(() => {
@@ -273,6 +273,8 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(sincronizadorPrazosOficiais);
   }, [items]);
 
+    return () => clearInterval(sincronizadorPrazosOficiais);
+  }, [items]);
 
     return () => clearInterval(relogioCentral);
   }, []);
