@@ -129,17 +129,8 @@ function AppContent() {
 
   const prevItemIdsRef = useRef<Set<string>>(new Set(items.map((i) => i.id)));
 
-  useEffect(() => {      
-  const sincronizadorGeral = setInterval(() => {
-    console.log("🔄 MEU FILTRO - Buscando novas dispensas em andamento no RJ...");
-    buscarDispensasReaisRJ().then(novosDados => {
-      setLicitacoes(novosDados);
-    });
-  }, 120000); 
-  
-  return () => clearInterval(sincronizadorGeral);
-}, []);
-    const currentIds = new Set(items.map((i) => i.id));
+  useEffect(() => { 
+     const currentIds = new Set(items.map((i) => i.id));
     const newIds = new Set<string>();
     currentIds.forEach((id) => {
       if (!prevItemIdsRef.current.has(id)) {
