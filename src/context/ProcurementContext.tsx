@@ -242,8 +242,9 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, 1500);
   }, []);
 
-   // ⚡ MOTOR DE CONTAGEM REGRESSIVA SÍNCRONO (UNIFICADO E TIPADO)
-       const sincronizadorPrazosOficiais = setInterval(() => {
+     // ⚡ ENGINE DE TEMPO REAL: Sincronizador de Prazos Oficiais
+  useEffect(() => {
+    const sincronizadorPrazosOficiais = setInterval(() => {
       setItems((listaAtual) =>
         listaAtual.map((item) => {
           if (!item.closesAt) return item;
@@ -262,8 +263,12 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
       );
     }, 1000);
 
-    return () => clearInterval(sincronizadorPrazosOficiais);
-  }, []);
+    return () => {
+      clearInterval(sincronizadorPrazosOficiais);
+    };
+  }, []); // 💡 Bloco fechado corretamente aqui!
+
+  // --- Background worker: poll every 45 seconds ---
 
    // SIMULAÇÃO DE DISPUTA DE LANCES ATIVA E COMPLETA
   useEffect(() => {
