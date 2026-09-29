@@ -256,6 +256,29 @@ function AppContent() {
   const [selectedItem, setSelectedItem] = useState<ProcurementItem | null>(null);
   const [newItemIds, setNewItemIds] = useState<Set<string>>(new Set());
 
+  const [liveItems, setLiveItems] = useState<ProcurementItem[]>([]);
+
+  useEffect(() => {
+    setLiveItems(items);
+  }, [items]);
+
+  useEffect(() => {
+    const timerGeral = setInterval(() => {
+      setLiveItems((listaAtual) =>
+        listaAtual.map((item) => {
+          const segundosAtuais = item.timeLeft !== undefined ? Number(item.timeLeft) : Math.floor(Math.random() * 3600);
+          
+          if (segundosAtuais <= 0) {
+            return { ...item, timeLeft: 0 };
+          }
+          
+          return { ...item, timeLeft: segundosAtuais - 1 };
+        })
+      );
+    }, 1000);
+
+    return () => clearInterval(timerGeral);
+  }, []);
   const prevItemIdsRef = useRef<Set<string>>(new Set(items.map((i) => i.id)));
 
   useEffect(() => { 
