@@ -255,70 +255,15 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
       }
     };
 
-       const interval = setInterval(poll, 45_000);
+    const interval = setInterval(poll, 45_000);
     return () => clearInterval(interval);
   }, [emitNewDispensa]);
 
   // --- Live bidding simulation: update competing prices every 15-30 seconds ---
+
   useEffect(() => {
     const updateBiddingPrices = () => {
       setItems((prev) =>
         prev.map((item) => {
           if (item.column !== 'disputa') return item;
-          // Reduz o preço atual do lance vencedor simulando a concorrência ao vivo
-          const variacaoAgressiva = item.estimatedValue * (Math.random() * 0.01 + 0.002);
-          const novoPrecoMinimo = item.currentLowBid 
-            ? item.currentLowBid - variacaoAgressiva 
-            : item.estimatedValue - variacaoAgressiva;
-          
-          return {
-            ...item,
-            currentLowBid: novoPrecoMinimo > item.estimatedValue * 0.6 ? novoPrecoMinimo : item.currentLowBid
-          };
-        })
-      );
-    };
-
-    const intervalBids = setInterval(updateBiddingPrices, 20_000);
-    return () => clearInterval(intervalBids);
-  }, []);
-
-  return (
-    <ProcurementContext.Provider
-      value={{
-        items,
-        addItem,
-        moveItem,
-        updateItem,
-        cnaes,
-        toggleCnae,
-        alerts,
-        setAlerts,
-        channelConfig,
-        setChannelConfig,
-        notifications,
-        addNotification,
-        clearNotifications,
-        socketStatus,
-        lastSync,
-        toasts,
-        dismissToast,
-        waToasts,
-        dismissWaToast,
-        testMessageState,
-        sendTestMessage,
-        injectUrgentItem,
-      }}
-    >
-      {children}
-    </ProcurementContext.Provider>
-  );
-}
-
-export function useProcurementSocket() {
-  const context = useContext(ProcurementContext);
-  if (context === undefined) {
-    throw new Error('useProcurementSocket deve ser utilizado dentro de um ProcurementProvider');
-  }
-  return context;
-}
+          // Drop the current low-bid value by a random safe interv
