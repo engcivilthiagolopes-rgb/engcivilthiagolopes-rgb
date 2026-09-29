@@ -241,8 +241,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
       setTimeout(() => setTestMessageState({ status: 'idle' }), 3000);
     }, 1500);
   }, []);
-
-     // ⚡ ENGINE DE TEMPO REAL: Sincronizador de Prazos Oficiais
+  // ⚡ ENGINE DE TEMPO REAL: Sincronizador de Prazos Oficiais
   useEffect(() => {
     const sincronizadorPrazosOficiais = setInterval(() => {
       setItems((listaAtual) =>
@@ -262,7 +261,6 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
         })
       );
     }, 1000);
-
     return () => {
       clearInterval(sincronizadorPrazosOficiais);
     };
