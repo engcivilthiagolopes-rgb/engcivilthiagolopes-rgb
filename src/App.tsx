@@ -129,8 +129,7 @@ function AppContent() {
 
   const prevItemIdsRef = useRef<Set<string>>(new Set(items.map((i) => i.id)));
 
-  useEffect(() => {
-      carregarDados(); 
+  useEffect(() => {      
   const sincronizadorGeral = setInterval(() => {
     console.log("🔄 MEU FILTRO - Buscando novas dispensas em andamento no RJ...");
     buscarDispensasReaisRJ().then(novosDados => {
@@ -140,7 +139,6 @@ function AppContent() {
   
   return () => clearInterval(sincronizadorGeral);
 }, []);
-
     const currentIds = new Set(items.map((i) => i.id));
     const newIds = new Set<string>();
     currentIds.forEach((id) => {
