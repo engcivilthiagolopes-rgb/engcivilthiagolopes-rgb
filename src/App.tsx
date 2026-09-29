@@ -129,7 +129,8 @@ function AppContent() {
 
   const prevItemIdsRef = useRef<Set<string>>(new Set(items.map((i) => i.id)));
 
-  // Substitua ou adicione este bloco para sincronização contínua na Vercel
+  useEffect(() => {
+    // Substitua ou adicione este bloco para sincronização contínua na Vercel
 useEffect(() => {
   // 1. Faz a primeira busca imediatamente ao carregar a página
   carregarDados();
@@ -147,7 +148,6 @@ useEffect(() => {
   return () => clearInterval(sincronizadorGeral);
 }, []);
 
-  useEffect(() => {
     const currentIds = new Set(items.map((i) => i.id));
     const newIds = new Set<string>();
     currentIds.forEach((id) => {
