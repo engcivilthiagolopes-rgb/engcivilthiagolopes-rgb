@@ -242,18 +242,37 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, 1500);
   }, []);
 
-  // CRONÔMETRO RESTRITO SEGUNDO A SEGUNDO INDEPENDENTE
+  // ⚡ MOTOR DE SINCRONIZAÇÃO EM TEMPO REAL COM OS SITES DE LICITAÇÃO
+  // Executa a cada 1 segundo, calculando o prazo oficial do edital contra a hora atual do sistema
   useEffect(() => {
-    const relogioCentral = setInterval(() => {
+    const sincronizadorPrazosOficiais = setInterval(() => {
       setItems((listaAtual) =>
         listaAtual.map((item) => {
-          if (item.timeLeft !== undefined && item.timeLeft > 0) {
-            return { ...item, timeLeft: item.timeLeft - 1 };
-          }
-          return item;
+          if (!item.closesAt) return item;
+
+          // 1. Pega o horário exato de término estipulado no site do governo
+          const dataEncerramentoEdital = new Date(item.closesAt).getTime();
+          
+          // 2. Pega o horário real exato do relógio do usuário agora
+          const horaRealAtual = Date.now();
+
+          // 3. Calcula a diferença matemática exata em segundos restantes
+          const diferencaEmMilissegundos = dataEncerramentoEdital - horaRealAtual;
+          const segundosRestantesReais = Math.floor(diferencaEmMilissegundos / 1000);
+
+          // 4. Injeta o valor dinâmico atualizado no item para renderização na tela
+          return {
+            ...item,
+            timeLeft: segundosRestantesReais > 0 ? segundosRestantesReais : 0,
+            status: segundosRestantesReais > 0 ? item.status : 'closed' // Fecha automaticamente se o prazo expirar
+          };
         })
       );
     }, 1000);
+
+    return () => clearInterval(sincronizadorPrazosOficiais);
+  }, [items]);
+
 
     return () => clearInterval(relogioCentral);
   }, []);
