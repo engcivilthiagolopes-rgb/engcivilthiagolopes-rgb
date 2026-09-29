@@ -129,6 +129,24 @@ function AppContent() {
 
   const prevItemIdsRef = useRef<Set<string>>(new Set(items.map((i) => i.id)));
 
+  // Substitua ou adicione este bloco para sincronização contínua na Vercel
+useEffect(() => {
+  // 1. Faz a primeira busca imediatamente ao carregar a página
+  carregarDados();
+
+  // 2. Cria um temporizador que "acorda" a cada 2 minutos (120000ms) 
+  // para bater na API do PNCP e trazer as novas licitações em tempo real
+  const sincronizadorGeral = setInterval(() => {
+    console.log("🔄 MEU FILTRO - Buscando novas dispensas em andamento no RJ...");
+    buscarDispensasReaisRJ().then(novosDados => {
+      setLicitacoes(novosDados);
+    });
+  }, 120000); 
+
+  // Limpa o processo caso a página seja fechada, evitando travar o navegador
+  return () => clearInterval(sincronizadorGeral);
+}, []);
+
   useEffect(() => {
     const currentIds = new Set(items.map((i) => i.id));
     const newIds = new Set<string>();
