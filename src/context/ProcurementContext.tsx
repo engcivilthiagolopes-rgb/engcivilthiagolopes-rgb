@@ -242,7 +242,7 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     }, 1500);
   }, []);
 
-    // ⚡ MOTOR DE SINCRONIZAÇÃO EM TEMPO REAL COM OS SITES DE LICITAÇÃO
+  // ⚡ MOTOR DE SINCRONIZAÇÃO EM TEMPO REAL COM OS SITES DE LICITAÇÃO
   // Executa a cada 1 segundo, calculando o prazo oficial do edital contra a hora atual do sistema
   useEffect(() => {
     const sincronizadorPrazosOficiais = setInterval(() => {
@@ -270,11 +270,27 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
       );
     }, 1000);
 
-    return () => clearInterval(sincronizadorPrazosOficiais);
-  }, [items]);
+       const sincronizadorPrazosOficiais = setInterval(() => {
+      setItems((listaAtual) =>
+        listaAtual.map((item) => {
+          if (!item.closesAt) return item;
+
+          const dataEncerramentoEdital = new Date(item.closesAt).getTime();
+          const horaRealAtual = Date.now();
+          const diferencaMilissegundos = dataEncerramentoEdital - horaRealAtual;
+          const segundosRestantesReais = Math.floor(diferencaMilissegundos / 1000);
+
+          return {
+            ...item,
+            timeLeft: segundosRestantesReais > 0 ? segundosRestantesReais : 0,
+            status: segundosRestantesReais > 0 ? item.status : ('closed' as any)
+          };
+        })
+      );
+    }, 1000);
 
     return () => clearInterval(sincronizadorPrazosOficiais);
-  }, [items]);
+  }, []); // 💡 O código deve fechar exatamente aqui! Delete tudo o que estiver sobrando entre esse ponto e a simulação de lances ("updateBiddingPrices").
 
     return () => clearInterval(relogioCentral);
   }, []);
