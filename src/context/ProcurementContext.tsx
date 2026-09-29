@@ -228,27 +228,45 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     [addItem, addNotification, dismissToast, dismissWaToast],
   );
 
-  // --- Manual injection ---
-
   const injectUrgentItem = useCallback(() => {
     const item = generateProcurementItem(true);
     emitNewDispensa(item);
     return item;
   }, [emitNewDispensa]);
 
-  // --- Background worker: poll every 45 seconds ---
+  const sendTestMessage = useCallback(() => {
+    setTestMessageState({ status: 'loading' });
+    setTimeout(() => {
+      setTestMessageState({ status: 'success' });
+      setTimeout(() => setTestMessageState({ status: 'idle' }), 3000);
+    }, 1500);
+  }, []);
+
+  // CRONÔMETRO RESTRITO SEGUNDO A SEGUNDO INDEPENDENTE
+  useEffect(() => {
+    const relogioCentral = setInterval(() => {
+      setItems((listaAtual) =>
+        listaAtual.map((item) => {
+          if (item.timeLeft !== undefined && item.timeLeft > 0) {
+            return { ...item, timeLeft: item.timeLeft - 1 };
+          }
+          return item;
+        })
+      );
+    }, 1000);
+
+    return () => clearInterval(relogioCentral);
+  }, []);
 
   useEffect(() => {
     const poll = () => {
       setLastSync(new Date());
 
-      // Simulate occasional reconnect
       if (Math.random() < 0.05) {
         setSocketStatus('reconnecting');
         setTimeout(() => setSocketStatus('connected'), 2000 + Math.random() * 2000);
       }
 
-      // 50% chance to find a new opportunity on each poll
       if (Math.random() < 0.5) {
         const item = generateProcurementItem(false);
         emitNewDispensa(item);
@@ -259,11 +277,63 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(interval);
   }, [emitNewDispensa]);
 
-  // --- Live bidding simulation: update competing prices every 15-30 seconds ---
-
+  // SIMULAÇÃO DE DISPUTA DE LANCES ATIVA E COMPLETA
   useEffect(() => {
     const updateBiddingPrices = () => {
       setItems((prev) =>
         prev.map((item) => {
           if (item.column !== 'disputa') return item;
-          // Drop the current low-bid value by a random safe interv
+          const variacaoAgressiva = (item.estimatedValue * (Math.random() * 0.01 + 0.002));
+          const novoPrecoMinimo = item.currentLowBid ? item.currentLowBid - variacaoAgressiva : item.estimatedValue - variacaoAgressiva;
+          
+          return {
+            ...item,
+            currentLowBid: novoPrecoMinimo > item.estimatedValue * 0.6 ? novoPrecoMinimo : item.currentLowBid
+          };
+        })
+      );
+    };
+
+    const intervalBids = setInterval(updateBiddingPrices, 20_000);
+    return () => clearInterval(intervalBids);
+  }, []);
+
+  return (
+    <ProcurementContext.Provider
+      value={{
+        items,
+        addItem,
+        moveItem,
+        updateItem,
+        cnaes,
+toggleCnae,
+alerts,
+setAlerts,
+channelConfig,
+setChannelConfig,
+notifications,
+addNotification,
+clearNotifications,
+socketStatus,
+lastSync,
+toasts,
+dismissToast,
+waToasts,
+dismissWaToast,
+testMessageState,
+sendTestMessage,
+injectUrgentItem,
+}}
+>
+{children}
+</ProcurementContext.Provider>
+);
+}
+export function useProcurementSocket() {
+const context = useContext(ProcurementContext);
+if (context === undefined) {
+throw new Error('useProcurementSocket deve ser utilizado dentro de um ProcurementProvider');
+}
+return context;
+}
+
