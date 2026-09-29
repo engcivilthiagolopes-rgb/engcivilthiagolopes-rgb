@@ -120,41 +120,25 @@ function AppContent() {
     injectUrgentItem,
   } = useProcurementSocket();
 
-  // Forçamos o tipo aceitar a página de fornecedores de forma segura
   const [page, setPage] = useState<Page | 'fornecedores'>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<ProcurementItem | null>(null);
   const [newItemIds, setNewItemIds] = useState<Set<string>>(new Set());
 
-  // 👇 NOVA ENGINE DE TEMPO REAL: Estado local para controlar os cronômetros decrescentes
-  const [liveItems, setLiveItems] = useState<ProcurementItem[]>([]);
-
-  // Sincroniza a lista local dinâmica sempre que o Contexto Socket injetar novos itens
+  // 👇 ATUALIZAÇÃO AUTOMÁTICA EM TEMPO REAL COMPATÍVEL COM TYPESCRIPT
+  // Captura os itens do Socket e força o decremento numérico dos segundos diretamente a cada 1 segundo
   useEffect(() => {
-    setLiveItems(items);
-  }, [items]);
-
-  // 👇 CRONÔMETRO RESTRITO SEGUNDO A SEGUNDO: Atualiza os tempos independentes sem congelar
-  useEffect(() => {
-    const timerGeral = setInterval(() => {
-      setLiveItems((listaAtual) =>
-        listaAtual.map((item) => {
-          // Se o item não tiver segundos restantes definidos pelo mock, injeta um aleatório para o teste rodar
-          const segundosAtuais = item.timeLeft !== undefined ? Number(item.timeLeft) : Math.floor(Math.random() * 3600);
-          
-          if (segundosAtuais <= 0) {
-            return { ...item, timeLeft: 0 };
-          }
-          
-          // Decrementa o tempo restante de cada licitação individualmente por segundo
-          return { ...item, timeLeft: segundosAtuais - 1 };
-        })
-      );
+    const disparadorTempoReal = setInterval(() => {
+      items.forEach(item => {
+        if (item.timeLeft && item.timeLeft > 0) {
+          item.timeLeft = item.timeLeft - 1;
+        }
+      });
     }, 1000);
 
-    return () => clearInterval(timerGeral);
-  }, []);
+    return () => clearInterval(disparadorTempoReal);
+  }, [items]);
 
   const prevItemIdsRef = useRef<Set<string>>(new Set(items.map((i) => i.id)));
 
@@ -206,7 +190,7 @@ function AppContent() {
   }, [injectUrgentItem]);
 
   const handleNavigate = (p: Page) => {
-    setPage(p);
+    setPage(p as any);
     setSidebarOpen(false);
   };
 
@@ -228,7 +212,7 @@ function AppContent() {
           {page === 'dashboard' && <DashboardPage />}
           {page === 'kanban' && (
             <KanbanPage
-              items={liveItems} // Usando a lista com atualização de tempo real
+              items={items}
               onMoveItem={moveItem}
               onViewItem={setSelectedItem}
               newItemIds={newItemIds}
@@ -236,12 +220,12 @@ function AppContent() {
           )}
           {page === 'urgent' && (
             <UrgentPage
-              items={liveItems} // Usando a lista com atualização de tempo real
+              items={items}
               onViewItem={setSelectedItem}
               onSendToKanban={handleSendToKanban}
             />
           )}
-          {/* ROTA ATIVA: SE A PAGE FOR FORNECEDORES, SEU PAINEL EXIBE O NOVO COMPONENTE B2B */}
+          {/* EXIBIÇÃO DA PÁGINA CUSTOMIZADA DE FORNECEDORES */}
           {page === 'fornecedores' && <SuppliersPage />}
           {page === 'settings' && (
             <SettingsPage
@@ -263,3 +247,21 @@ function AppContent() {
       <DetailModal
         item={selectedItem}
         onClose={() => setSelectedItem(null)}
+        onSendToKanban={handleSendToKanban}
+      />
+      <ToastContainer onOpenInFunnel={handleOpenInFunnel} />
+      <WhatsAppToastContainer />
+      <DevControlPanel />
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <ProcurementProvider>
+        <AppContent />
+      </ProcurementProvider>
+    </ThemeProvider>
+  );
+}
