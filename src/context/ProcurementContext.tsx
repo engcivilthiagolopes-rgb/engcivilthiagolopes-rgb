@@ -255,109 +255,70 @@ export function ProcurementProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    const interval = setInterval(poll, 45_000);
+       const interval = setInterval(poll, 45_000);
     return () => clearInterval(interval);
   }, [emitNewDispensa]);
 
   // --- Live bidding simulation: update competing prices every 15-30 seconds ---
-
   useEffect(() => {
     const updateBiddingPrices = () => {
       setItems((prev) =>
         prev.map((item) => {
           if (item.column !== 'disputa') return item;
-          // Drop the current low-bid value by a random safe interval (0.5% - 3%)
-          const dropPercent = 0.005 + Math.random() * 0.025;
-          const newValue = Math.round(item.estimatedValue * (1 - dropPercent));
+          // Reduz o preço atual do lance vencedor simulando a concorrência ao vivo
+          const variacaoAgressiva = item.estimatedValue * (Math.random() * 0.01 + 0.002);
+          const novoPrecoMinimo = item.currentLowBid 
+            ? item.currentLowBid - variacaoAgressiva 
+            : item.estimatedValue - variacaoAgressiva;
+          
           return {
             ...item,
-            estimatedValue: Math.max(newValue, Math.round(item.estimatedValue * 0.7)),
-            competitorCount: item.competitorCount + (Math.random() < 0.3 ? 1 : 0),
+            currentLowBid: novoPrecoMinimo > item.estimatedValue * 0.6 ? novoPrecoMinimo : item.currentLowBid
           };
-        }),
+        })
       );
     };
 
-    const interval = setInterval(updateBiddingPrices, 15_000 + Math.random() * 15_000);
-    return () => clearInterval(interval);
+    const intervalBids = setInterval(updateBiddingPrices, 20_000);
+    return () => clearInterval(intervalBids);
   }, []);
 
-  const sendTestMessage = useCallback(() => {
-    setTestMessageState({ status: 'loading' });
-    setTimeout(() => {
-      setTestMessageState({ status: 'success' });
-      setTimeout(() => setTestMessageState({ status: 'idle' }), 3000);
-    }, 2500);
-  }, []);
-
-  const value: ProcurementContextValue = {
-    items,
-    addItem,
-    moveItem,
-    updateItem,
-    cnaes,
-    toggleCnae,
-    alerts,
-    setAlerts,
-    channelConfig,
-    setChannelConfig,
-    notifications,
-    addNotification,
-    clearNotifications,
-    socketStatus,
-    lastSync,
-    toasts,
-    dismissToast,
-    waToasts,
-    dismissWaToast,
-    testMessageState,
-    sendTestMessage,
-    injectUrgentItem,
-  };
-
-  return <ProcurementContext.Provider value={value}>{children}</ProcurementContext.Provider>;
+  return (
+    <ProcurementContext.Provider
+      value={{
+        items,
+        addItem,
+        moveItem,
+        updateItem,
+        cnaes,
+        toggleCnae,
+        alerts,
+        setAlerts,
+        channelConfig,
+        setChannelConfig,
+        notifications,
+        addNotification,
+        clearNotifications,
+        socketStatus,
+        lastSync,
+        toasts,
+        dismissToast,
+        waToasts,
+        dismissWaToast,
+        testMessageState,
+        sendTestMessage,
+        injectUrgentItem,
+      }}
+    >
+      {children}
+    </ProcurementContext.Provider>
+  );
 }
 
 export function useProcurementSocket() {
-  const ctx = useContext(ProcurementContext);
-  if (!ctx) throw new Error('useProcurementSocket must be used within ProcurementProvider');
-  return ctx;
-}
-
-// --- Helpers ---
-
-function formatBRLShort(value: number): string {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
-function estimateMargin(_item: ProcurementItem): number {
-  return 15 + Math.floor(Math.random() * 20);
-}
-
-function formatBiddingTime(biddingStartsAt: string | null, closesAt: string): string {
-  const target = biddingStartsAt || closesAt;
-  const date = new Date(target);
-  const today = new Date();
-  const isToday = date.toDateString() === today.toDateString();
-  const time = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-  return isToday ? `HOJE às ${time} (Prazo Curto!)` : date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ` às ${time}`;
-}
-
-function formatCnaeName(code: string): string {
-  const names: Record<string, string> = {
-    '4761-0/03': 'Papelaria e Escritório',
-    '4754-7/01': 'Móveis Corporativos',
-    '4789-0/05': 'Limpeza e Higiene',
-    '4744-0/01': 'Ferragens e Ferramentas',
-    '4742-3/00': 'Material Elétrico',
-    '4744-0/03': 'Material Hidráulico',
-    '4741-5/00': 'Construção Geral e Pintura',
-    '4789-0/07': 'Informática e Automação',
-  };
-  return names[code] || code;
+  const context = useContext(ProcurementContext);
+  if (context === undefined) {
+    throw new Error('useProcurementSocket deve ser utilizado dentro de um ProcurementProvider');
+  }
+  return context;
 }
