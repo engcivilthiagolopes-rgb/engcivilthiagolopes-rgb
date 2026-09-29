@@ -121,8 +121,7 @@ function AppContent() {
     injectUrgentItem,
   } = useProcurementSocket();
 
-  // 👇 ALTERADO O TIPO DA PAGE PARA SUPORTAR A STRING 'fornecedores' CASO SEJA APONTADO NA NAVEGAÇÃO
-  const [page, setPage] = useState<Page | 'fornecedores'>('dashboard');
+  const [page, setPage] = useState<Page>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<ProcurementItem | null>(null);
@@ -184,9 +183,8 @@ function AppContent() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-app">
-      {/* SE O SEU ARQUIVO SIDEBAR SUPORTAR ABAS CUSTOMIZADAS, ESSA PROP DIRECIONA O ESTADO */}
       <Sidebar
-        active={page as Page}
+        active={page}
         onNavigate={handleNavigate}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}

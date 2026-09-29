@@ -1,6 +1,6 @@
-import { LayoutDashboard, KanbanSquare, Zap, SlidersHorizontal, X } from 'lucide-react';
+import { LayoutDashboard, KanbanSquare, Zap, SlidersHorizontal, Truck, X } from 'lucide-react';
 
-export type Page = 'dashboard' | 'kanban' | 'urgent' | 'settings';
+export type Page = 'dashboard' | 'kanban' | 'urgent' | 'settings' | 'fornecedores';
 
 interface SidebarProps {
   active: Page;
@@ -14,6 +14,7 @@ const navItems: { id: Page; label: string; icon: typeof LayoutDashboard; descrip
   { id: 'kanban', label: 'Kanban de Licitações', icon: KanbanSquare, description: 'Funil de compras' },
   { id: 'urgent', label: 'Compras Urgentes', icon: Zap, description: 'Tempo real' },
   { id: 'settings', label: 'Filtros & Config', icon: SlidersHorizontal, description: 'CNAEs e alertas' },
+  { id: 'fornecedores', label: 'Fornecedores (CNAEs)', icon: Truck, description: 'Distribuidores B2B' },
 ];
 
 export function Sidebar({ active, onNavigate, isOpen, onClose }: SidebarProps) {
